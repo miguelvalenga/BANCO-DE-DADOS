@@ -275,7 +275,7 @@ SELECT
 FROM tb_livros AS l1;
 
 
--- 25. Liste os livros que foram publicados no mesmo ano de algum outro livro (ano com mais de um título).
+-- 25. Liste os livros que foram publicados no mesmo ano de algum outro livro (ano com mais de um título). <---- IA
 
 SELECT
 *
