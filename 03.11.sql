@@ -160,3 +160,204 @@ SELECT
 FROM tb_livros
 GROUP BY autor
 HAVING quantidade_livros > 2;
+
+# Etapa 4 — Atualizações básicas
+
+-- 13. Marque o livro “Dom Casmurro” como indisponível.
+
+UPDATE tb_livros
+set disponivel = FALSE
+WHERE titulo = "Dom Casmurro";
+
+-- 14. Corrija para 1891 o ano de publicação de todos os registros cujo título seja “O Cortiço”, incluindo o cadastro duplicado.
+
+UPDATE tb_livros
+set ano_publicacao = 1891
+WHERE titulo = "O Cortiço";
+
+-- 15. Marque o livro “Vidas Secas”, identificado pelo id = 6, como disponível.
+
+UPDATE tb_livros
+set disponivel = TRUE
+WHERE id = 6;
+
+-- 16. Atualize o nome do autor “George Orwell” para “George Orwell (Verificado)” em todas as suas obras.
+
+UPDATE tb_livros
+SET autor = "George Orwell (Verificado)"
+WHERE autor = "George Orwell";
+
+-- 17. Marque todos os livros do autor Fiódor Dostoiévski como disponíveis.
+
+UPDATE tb_livros
+SET disponivel = TRUE
+WHERE autor = "Fiódor Dostoiévski";
+
+-- 18. Atualize o título do livro com id = 18 para “O Senhor dos Anéis: A Sociedade do Anel”.
+
+UPDATE tb_livros
+SET titulo = "O Senhor dos Anéis: A Sociedade do Anel"
+WHERE id = 18;
+
+# Etapa 5 — Atualizações com filtros e subqueries
+
+-- 19. Marque como indisponíveis os livros da autora J.K. Rowling publicados antes de 1999.
+
+UPDATE tb_livros
+SET disponivel = FALSE
+WHERE autor = "J.K. Rowling"
+AND ano_publicacao < 1999;
+
+-- 20. Torne disponíveis os livros indisponíveis publicados entre 1950 e 2000, incluindo os limites. Utilize BETWEEN combinado com AND.
+
+UPDATE tb_livros
+SET disponivel = TRUE
+WHERE ano_publicacao BETWEEN 1950 AND 2000;
+
+-- 21. Marque todos os livros do autor Victor Hugo como indisponíveis. Utilize uma subquery no WHERE para selecionar os IDs dos livros desse autor.
+
+UPDATE tb_livros
+SET disponivel = FALSE
+WHERE id IN (
+    SELECT id FROM (
+        SELECT id
+        FROM tb_livros
+        WHERE autor = "Victor Hugo"
+    ) AS livros
+);
+
+-- 22. Torne disponíveis os livros indisponíveis publicados entre 1930 e 1950, incluindo os limites. Utilize uma subquery no WHERE para selecionar seus IDs.
+
+UPDATE tb_livros
+SET disponivel = TRUE
+WHERE id IN (
+    SELECT id
+    FROM (
+        SELECT id
+        FROM tb_livros
+        WHERE disponivel = FALSE
+        AND ano_publicacao BETWEEN 1930 AND 1950
+    ) AS livros
+);
+
+-- 23. Marque como disponíveis todos os livros de autores cujo nome contenha “Kafka”. Utilize LIKE.
+
+UPDATE tb_livros
+SET disponivel = TRUE
+WHERE autor LIKE "%Kafka%";
+
+-- 24. Antes do inventário, a equipe solicitou retirar algumas obras de circulação. Marque como indisponíveis todos os livros dos autores Dan Brown, George Orwell (Verificado) e H.G. Wells. Utilize IN, considerando a alteração do nome realizada anteriormente.
+
+UPDATE tb_livros
+SET disponivel = FALSE
+WHERE autor IN (
+    'Dan Brown',
+    'George Orwell (Verificado)',
+    'H.G. Wells'
+);
+
+-- 25. A biblioteca decidiu disponibilizar todas as obras publicadas de 1930 a 1969, incluindo os limites. Utilize BETWEEN para atualizar a disponibilidade para verdadeiro, independentemente do status atual.
+
+UPDATE tb_livros
+SET disponivel = TRUE
+WHERE ano_publicacao BETWEEN 1930 AND 1969;
+
+-- 26. Atualize para “Autor Revisado” o campo autor de todas as obras cujo nome do autor contenha “Tolstói”. Utilize LIKE.
+
+UPDATE tb_livros
+SET autor = "Autor Revisado"
+WHERE autor LIKE "%Tolstói%";
+
+-- 27. Algumas obras entrarão em restauração. Marque como indisponíveis os livros publicados antes de 1950 ou cujo título contenha “Mundo”. Utilize OR.
+
+UPDATE tb_livros
+SET disponivel = FALSE
+WHERE ano_publicacao < 1950
+OR titulo LIKE "%Mundo%";
+
+-- 28. Após uma conferência, a equipe solicitou garantir que os livros de IDs 3, 6, 11, 18 e 45 estejam disponíveis. Utilize IN para atualizar esses registros, independentemente da disponibilidade atual.
+
+UPDATE tb_livros
+SET disponivel = TRUE
+WHERE id IN (3,6,11,18,45);
+
+-- 29. A biblioteca lançará uma edição comemorativa de algumas coleções. Localize os livros cujo título contenha “Senhor” ou “Nárnia” e acrescente “ (Coleção Especial)” ao final do título, preservando o texto original. Utilize LIKE, OR e CONCAT.
+
+UPDATE tb_livros
+SET titulo = CONCAT(titulo, " (Coleção Especial)")
+WHERE titulo LIKE "%Senhor%"
+OR titulo LIKE "%Nárnia%";
+
+# Etapa 6 — Exclusões específicas e com múltiplas condições
+
+-- 30. Exclua o livro “O Código Da Vinci” da base de dados.
+
+DELETE FROM tb_livros
+WHERE titulo = "O Código Da Vinci";
+
+-- 31. Exclua todos os livros indisponíveis do autor H.G. Wells. Considere as atualizações realizadas nas questões anteriores.
+
+DELETE FROM tb_livros
+WHERE disponivel = FALSE
+AND autor = "H.G. Wells";
+
+-- 32. Remova todos os livros do autor Eça de Queirós.
+
+DELETE FROM tb_livros
+WHERE autor = "Eça de Queirós";
+
+-- 33. Exclua todos os livros cujo ano de publicação seja menor que zero.
+
+DELETE FROM tb_livros
+WHERE ano_publicacao < 0;
+
+-- 34. Remova os livros disponíveis do autor José de Alencar.
+
+DELETE FROM tb_livros
+WHERE disponivel = TRUE
+AND autor = "José de Alencar";
+
+-- 35. A biblioteca solicitou remover todos os livros indisponíveis dos autores Victor Hugo e Franz Kafka. Utilize IN combinado com AND.
+
+DELETE FROM tb_livros
+WHERE disponivel = FALSE
+AND autor IN ("Victor Hugo", "Franz Kafka");
+
+-- 36. Remova os livros indisponíveis publicados entre 1800 e 1900, incluindo os limites. Utilize BETWEEN combinado com AND.
+
+DELETE FROM tb_livros
+WHERE disponivel = FALSE
+AND ano_publicacao BETWEEN 1800 AND 1900;
+
+-- 37. Após a limpeza anterior, exclua todos os registros que ainda estejam indisponíveis e tenham sido publicados antes de 1900.
+
+DELETE FROM tb_livros
+WHERE disponivel = FALSE
+AND ano_publicacao < 1900;
+
+-- 38. Exclua os livros que estejam indisponíveis e tenham sido publicados a partir do ano 2000. Utilize AND.
+
+DELETE FROM tb_livros
+WHERE disponivel = FALSE
+AND ano_publicacao >= 2000;
+
+# Etapa 7 — Exclusão com subquery e coleção temática
+
+-- 39. Exclua todos os livros dos autores que, neste momento da atividade, possuem mais de dois registros cadastrados. Utilize uma subquery com GROUP BY e HAVING COUNT(*) > 2. Considere o conteúdo atual da tabela, após todas as operações anteriores.
+
+DELETE FROM tb_livros
+WHERE autor IN (
+	SELECT autor FROM (
+		SELECT autor
+		FROM tb_livros
+		GROUP BY autor
+		HAVING COUNT(*) > 2
+        ) AS contagem
+    );
+
+-- 40. A biblioteca deseja manter uma coleção temática contendo apenas obras de J.K. Rowling. Exclua todos os registros cujo autor não contenha “J.K. Rowling”, utilizando NOT LIKE. Depois, consulte a tabela e confira se permaneceram somente os dois livros dessa autora.
+
+DELETE FROM tb_livros
+WHERE autor NOT LIKE "%J.K. Rowling%";
+
+SELECT * FROM tb_livros;
