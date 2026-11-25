@@ -344,17 +344,15 @@ SELECT
     ) AS percentual_disponivel
 FROM tb_vendas_agro;
 
--- KPI 2. Percentual de produtos indisponíveis
+-- KPI 2. Valor potencial por categoria
 
 SELECT
-    COUNT(CASE WHEN estoque = FALSE THEN 1 END) AS indisponiveis,
-    COUNT(*) AS total_registros,
-    ROUND(
-        COUNT(CASE WHEN estoque = FALSE THEN 1 END) * 100.0
-        / NULLIF(COUNT(*), 0),
-        2
-    ) AS percentual_indisponivel
-FROM tb_vendas_agro;
+    categoria,
+    ROUND(SUM(quantidade * valor_unitario), 2) AS valor_potencial
+FROM tb_vendas_agro
+WHERE estoque = TRUE
+GROUP BY categoria
+ORDER BY valor_potencial DESC;
 
 -- KPI 3. Quantidade total armazenada disponível
 
